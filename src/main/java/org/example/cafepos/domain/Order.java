@@ -1,6 +1,8 @@
 package org.example.cafepos.domain;
 
 import org.example.cafepos.common.Money;
+import org.example.cafepos.payment.PaymentStrategy;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -45,4 +47,10 @@ public final class Order {
     public List<LineItem> items() {
         return items;
     }
+//adding week3 payment method
+public void pay(PaymentStrategy strategy) {
+    if (strategy == null) throw new
+            IllegalArgumentException("strategy required");
+    strategy.pay(this);
+}
 }
