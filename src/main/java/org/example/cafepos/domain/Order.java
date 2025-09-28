@@ -1,6 +1,7 @@
 package org.example.cafepos.domain;
 
 import org.example.cafepos.common.Money;
+import org.example.cafepos.payment.PaymentStrategy;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -36,6 +37,14 @@ public final class Order {
 
     public Money totalWithTax(int percent) {
         return subtotal().add(taxAtPercent(percent));
+    }
+
+    public void pay(PaymentStrategy payment) {
+        if (payment == null) {
+            throw new IllegalArgumentException("Strategy required");
+        }
+
+        payment.pay(this);
     }
 
     public long id() {
