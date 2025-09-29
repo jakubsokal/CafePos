@@ -10,6 +10,7 @@ import org.example.cafepos.domain.Order;
 import org.example.cafepos.domain.OrderIds;
 import org.example.cafepos.payment.CashPayment;
 import org.example.cafepos.payment.WalletPayment;
+import org.example.cafepos.payment.CardPayment;
 
 public final class Week3Demo {
     public static void main(String[] args) {
@@ -30,6 +31,6 @@ public final class Week3Demo {
                 order2.addItem(new LineItem(catalog.findById("P-CCK").orElseThrow(), 1));
                         System.out.println("Order #" + order2.id() + " Total: " +
                                 order2.totalWithTax(10));
-        order2.pay(new WalletPayment("alice-wallet-01")); // changed this from Cardpayment
+        order2.pay(new CardPayment("alice-wallet-01")); // changed this from Cardpayment
     }
 }
