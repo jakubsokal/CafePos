@@ -9,6 +9,7 @@ import java.util.List;
 
 public final class Order {
     private final long id;
+
     private final List<LineItem> items = new ArrayList<>();
 
     public Order(long id) {
@@ -25,8 +26,11 @@ public final class Order {
     }
 
     public Money taxAtPercent(int percent) {
-        if (percent < 0 || percent > 100) throw new IllegalArgumentException
-                ("Your value must be non-negative and less than or equal to 100");
+        if (percent < 0 || percent > 100) {
+            throw new IllegalArgumentException(
+                    "Your value must be non-negative and less than or equal to 100"
+            );
+        }
 
         BigDecimal subtotalAmount = new BigDecimal(subtotal().toString());
         BigDecimal taxAmount = subtotalAmount.multiply(BigDecimal.valueOf(percent))

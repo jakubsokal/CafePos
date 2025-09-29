@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public final class Money implements Comparable<Money> {
     private final BigDecimal amount;
+
     public static Money of(double value) {
         return new Money(BigDecimal.valueOf(value));
     }
@@ -22,27 +23,36 @@ public final class Money implements Comparable<Money> {
     }
 
     public Money add(Money other) {
-        if(other.amount.compareTo(BigDecimal.ZERO) < 0 ) throw new IllegalArgumentException("amount must be non-negative");
+        if(other.amount.compareTo(BigDecimal.ZERO) < 0 ) {
+            throw new IllegalArgumentException("amount must be non-negative");
+        }
 
         return new Money(this.amount.add(other.amount).setScale(2, RoundingMode.HALF_UP));
     }
 
     public Money multiply(int qty) {
-        if (qty < 0) throw new IllegalArgumentException("quantity must be non-negative");
+        if (qty < 0) {
+            throw new IllegalArgumentException("quantity must be non-negative");
+        }
 
         return new Money(this.amount.multiply(BigDecimal.valueOf(qty)).setScale(2, RoundingMode.HALF_UP));
     }
 
     @Override
     public int compareTo(Money other) {
-        if (other == null) throw new IllegalArgumentException("Other Money object cannot be null");
+        if (other == null) {
+            throw new IllegalArgumentException("Other Money object cannot be null");
+        }
 
         return this.amount.compareTo(other.amount);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
+
         Money money = (Money) o;
 
         return amount.equals(money.amount);

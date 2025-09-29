@@ -5,12 +5,16 @@ import org.example.cafepos.common.Product;
 
 public final class LineItem {
     private final Product product;
+
     private final int quantity;
+
     public LineItem(Product product, int quantity) {
-        if (product == null) throw new
-                IllegalArgumentException("product required");
-        if (quantity <= 0) throw new
-                IllegalArgumentException("quantity must be > 0");
+        if (product == null){
+            throw new IllegalArgumentException("product required");
+            }
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("quantity must be > 0");
+        }
         this.product = product; this.quantity = quantity;
     }
 
@@ -23,5 +27,6 @@ public final class LineItem {
     }
 
     public Money lineTotal() {
-        return product.basePrice().multiply(quantity); }
+        return product.basePrice().multiply(quantity);
+    }
 }

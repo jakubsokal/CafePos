@@ -14,14 +14,13 @@ public final class CardPayment implements PaymentStrategy {
         String maskedCard = maskCardNumber(cardNumber);
 
         System.out.println("[Card] Customer paid " +
-                order.totalWithTax(10) + " EUR with ccard" + maskedCard);
+                order.totalWithTax(10) + " EUR with card " + maskedCard);
     }
 
     private String maskCardNumber(String cardNumber) {
         if (cardNumber.length() < 8) {
             throw new IllegalArgumentException("Card number must be at least 8 digits long");
-        }
-        if (!cardNumber.matches("\\d+")) {
+        }else if (!cardNumber.matches("\\d+")) {
             throw new IllegalArgumentException("Card number must contain only digits");
         }
 

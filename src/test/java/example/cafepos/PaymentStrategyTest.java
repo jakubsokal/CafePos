@@ -37,7 +37,12 @@ public class PaymentStrategyTest {
 
     @Test
     void PaymentFailsWhenStrategyIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> order.pay(null));
+        //Arrange
+        String actualMessage = "Strategy required";
+
+        //Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> order.pay(null));
+        assertEquals(actualMessage, exception.getMessage());
     }
 
     @Test
@@ -68,18 +73,22 @@ public class PaymentStrategyTest {
     void CardPaymentTooShortCardNumber() {
         //Arrange
         CardPayment cardPayment = new CardPayment("123");
+        String actualMessage = "Card number must be at least 8 digits long";
 
-        //Assert
-        assertThrows(IllegalArgumentException.class, () -> order.pay(cardPayment));
+        //Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> order.pay(cardPayment));
+        assertEquals(actualMessage, exception.getMessage());
     }
 
     @Test
     void CardPaymentInvalidCardNumber() {
         //Arrange
         CardPayment cardPayment = new CardPayment("ABCS1234");
+        String actualMessage = "Card number must contain only digits";
 
-        //Assert
-        assertThrows(IllegalArgumentException.class, () -> order.pay(cardPayment));
+        //Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> order.pay(cardPayment));
+        assertEquals(actualMessage, exception.getMessage());
     }
 
     @Test
