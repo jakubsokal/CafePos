@@ -63,10 +63,6 @@ public final class Order {
         return items;
     }
 
-    public List<OrderObserver> getObservers(){
-        return observers;
-    }
-
     public void register(OrderObserver o) {
     // if an observer does not exist it adds to the list of observers
         if (o == null) {

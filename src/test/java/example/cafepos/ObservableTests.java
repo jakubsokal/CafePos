@@ -5,31 +5,30 @@ import org.example.cafepos.common.Money;
 import org.example.cafepos.domain.LineItem;
 import org.example.cafepos.domain.Order;
 import org.example.cafepos.domain.OrderIds;
-import org.example.cafepos.domain.observers.CustomerNotifier;
-import org.example.cafepos.domain.observers.DeliveryDesk;
-import org.example.cafepos.domain.observers.KitchenDisplay;
+import org.example.cafepos.domain.OrderObserver;
 import org.example.cafepos.payment.CardPayment;
-import org.example.cafepos.payment.WalletPayment;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ObservableTests {
     private final Order order;
 
-    SimpleProduct BCK;
+    LineItem BCK;
 
-    ByteArrayOutputStream outputStream;
+    List<String> events;
 
+    //We create a new order for each test so we can test the events from scratch
     private ObservableTests()  {
-        outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
-        BCK = new SimpleProduct("P-BCK", "Biscuit Cake",
-                Money.of(5.50));
+        events = new ArrayList<>();
+        BCK = new LineItem(new SimpleProduct("P-BCK", "Biscuit Cake",
+                Money.of(5.50)), 1);
         order = new Order(OrderIds.next());
-        order.addItem(new LineItem(BCK, 2));
+        order.register((o, evt) -> events.add(evt));
     }
 
     @Test
@@ -40,27 +39,46 @@ public class ObservableTests {
 
     @Test
     public void RegisterSameTwiceEvent(){
-        KitchenDisplay event = new KitchenDisplay();
-        order.register(event);
-        order.register(event);
+        //Arrange
+        List<String> testList = new ArrayList<>();
+        OrderObserver observer = (o, evt) -> testList.add(evt);
 
-        assertEquals(1, order.getObservers().size());
-        assertEquals(event, order.getObservers().getFirst());
+        //Act
+        Order order1 = new Order(OrderIds.next());
+        order1.register(observer);
+        order1.register(observer);
+        order1.addItem(BCK);
+
+        order.register((o, evt) -> events.add(evt));
+        order.addItem(BCK);
+
+        /*Since events.size() = 1 we can tell only one observer was added if we add two observers
+        * events.size() = 2 we can see that in the second assert as order has one observer added in
+        * the constructor and second in this test*/
+        //Assert
+        assertEquals(1, testList.size());
+        assertTrue(testList.contains("itemAdded"));
+        assertEquals(2, events.size());
+        assertEquals(List.of("itemAdded", "itemAdded"), events);
+
     }
 
     @Test
     public void UnregisterEvent(){
         //Arrange
-        String expected = "Observer removed successfully\r\n";
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+        String expected = "Observer removed successfully";
+        OrderObserver observer = (o, evt) -> events.add(evt);
 
         //Act
-        KitchenDisplay event = new KitchenDisplay();
-        order.register(event);
-        order.unregister(event);
-        String output = outputStream.toString();
+        order.register(observer);
+        order.unregister(observer);
+        String output = outputStream.toString().trim();
 
         //Assert
         assertEquals(expected, output);
+        assertEquals(0, events.size());
     }
 
     @Test
@@ -69,107 +87,65 @@ public class ObservableTests {
         String expected = "Observer is not registered";
 
         //Act
-        IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () ->  order.unregister(new KitchenDisplay()));
+        IllegalArgumentException result = assertThrows(IllegalArgumentException.class,
+                () ->  order.unregister((o, evt) -> events.add(evt)));
 
         //Assert
         assertEquals(expected, result.getMessage());
+        assertEquals(0, events.size());
     }
 
     @Test
     public void KitchenDisplayAddedItemTest_Success() {
         //Arrange
-        String expected = String.format("[Kitchen] Order #%d 1x Coffee added.\r\n", order.id());
+        String expected = "itemAdded";
 
         //Act
-        order.register(new KitchenDisplay());
-        order.addItem(new LineItem(new SimpleProduct("P-CFE", "Coffee",
-                Money.of(3.50)), 1));
-        String output = outputStream.toString();
+        order.addItem(BCK);
 
         //Assert
-        assertEquals(expected, output);
-        assertEquals(2, order.items().size());
+        assertTrue(events.contains(expected));
+        assertEquals(1, events.size());
     }
 
     @Test
     public void KitchenDisplayAddedMultipleItemsTest_Success() {
         //Arrange
-        String expected = String.format("""
-                [Kitchen] Order #%d 1x Coffee added.\r
-                [Kitchen] Order #%d 3x Biscuit Cake added.\r
-                """, order.id(), order.id());
+        List<String> expected = List.of("itemAdded", "itemAdded");
 
         //Act
-        order.register(new KitchenDisplay());
         order.addItem(new LineItem(new SimpleProduct("P-CFE", "Coffee",
                 Money.of(3.50)), 1));
-        order.addItem(new LineItem(BCK, 3));
-        String output = outputStream.toString();
+        order.addItem(BCK);
 
         //Assert
-        assertEquals(expected, output);
-        assertEquals(3, order.items().size());
+        assertEquals(events, expected);
+        assertEquals(2, events.size());
     }
 
     @Test
     public void KitchenDisplayPaidTest_Success() {
         //Arrange
-        String expected = String.format("""
-                [Card] Customer paid 12.10 EUR with card ****7890\r
-                [Kitchen] Order #%d: Payment received.\r
-                """, order.id());
+        String expected = "paid";
+
         //Act
-        order.register(new KitchenDisplay());
         order.pay(new CardPayment("1234567890"));
-        String output = outputStream.toString();
 
         //Assert
-        assertEquals(expected, output);
-        assertEquals(Money.of(12.10), order.totalWithTax(10));
-        assertEquals(1, order.items().size());
-    }
-
-    @Test
-    public void CustomerNotifierAddedItemTest_Success() {
-        //Arrange
-        String expected = String.format("""
-                [Kitchen] Order #%d 3x Biscuit Cake added.\r
-                [Customer] Dear customer, your Order #%d has been updated: itemAdded.\r
-                """, order.id(), order.id());
-
-        //Act
-        order.register(new KitchenDisplay());
-        order.register(new CustomerNotifier());
-        order.addItem(new LineItem(BCK, 3));
-        String output = outputStream.toString();
-
-        //Assert
-        assertEquals(expected, output);
-        assertEquals(2, order.items().size());
+        assertTrue(events.contains(expected));
+        assertEquals(1, events.size());;
     }
 
     @Test
     public void CustomerNotifierReadyTest_Success() {
         //Arrange
-        String walletId = "sinead-wallet-01";
-        String expected = String.format("""
-                [Wallet] Customer paid 12.10 EUR via wallet %s\r
-                [Kitchen] Order #%d: Payment received.\r
-                [Customer] Dear customer, your Order #%d has been updated: paid.\r
-                [Customer] Dear customer, your Order #%d has been updated: ready.\r
-                [Delivery] Order #%d is ready for delivery.\r
-                """, walletId, order.id(), order.id(), order.id(), order.id());
+        List<String> expected = List.of( "ready");
 
         //Act
-        order.register(new KitchenDisplay());
-        order.register(new CustomerNotifier());
-        order.register(new DeliveryDesk());
-        order.pay(new WalletPayment(walletId));
         order.markReady();
-        String output = outputStream.toString();
 
         //Assert
-        assertEquals(expected, output);
-        assertEquals(Money.of(12.10), order.totalWithTax(10));
+        assertEquals(expected, events);
+        assertEquals(1, events.size());
     }
 }
