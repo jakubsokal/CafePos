@@ -9,6 +9,7 @@ import java.util.List;
 
 public final class Order {
     private final long id;
+
     private final List<OrderObserver> observers = new ArrayList<>();
 
     private final List<LineItem> items = new ArrayList<>();
@@ -62,6 +63,10 @@ public final class Order {
         return items;
     }
 
+    public List<OrderObserver> getObservers(){
+        return observers;
+    }
+
     public void register(OrderObserver o) {
     // if an observer does not exist it adds to the list of observers
         if (o == null) {
@@ -71,8 +76,9 @@ public final class Order {
             observers.add(o);
         }
     }
+
     public void unregister(OrderObserver o) {
-    // if the observer exists,it delets it else it throws an error
+    // if the observer exists,it deletes it else it throws an error
         if (observers.contains(o)) {
             observers.remove(o);
             System.out.println("Observer removed successfully");
@@ -80,6 +86,7 @@ public final class Order {
             throw new IllegalArgumentException("Observer is not registered");
         }
     }
+
     // 2) Publish events
     private void notifyObservers(String eventType) {
     // scans the list of observers for the observer and updates it with the eventType
@@ -87,6 +94,7 @@ public final class Order {
             o.updated(this, eventType);
         }
     }
+
     public void markReady() {
         notifyObservers("ready");
     }
