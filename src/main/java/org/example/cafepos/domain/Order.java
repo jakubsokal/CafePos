@@ -51,6 +51,7 @@ public final class Order {
         }
 
         payment.pay(this);
+        notifyObservers("paid");
     }
 
     public long id() {
