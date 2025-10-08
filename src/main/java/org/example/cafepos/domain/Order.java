@@ -7,7 +7,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Order {
+public final class Order implements OrderPublisher{
     private final long id;
 
     private final List<OrderObserver> observers = new ArrayList<>();
@@ -20,7 +20,7 @@ public final class Order {
 
     public void addItem(LineItem li) {
         items.add(li);
-        notifyObservers("itemAdded");
+        notifyObservers(this, "itemAdded");
     }
 
     public Money subtotal() {
@@ -52,7 +52,7 @@ public final class Order {
         }
 
         payment.pay(this);
-        notifyObservers("paid");
+        notifyObservers(this, "paid");
     }
 
     public long id() {
@@ -63,6 +63,7 @@ public final class Order {
         return items;
     }
 
+    @Override
     public void register(OrderObserver o) {
     // if an observer does not exist it adds to the list of observers
         if (o == null) {
@@ -73,6 +74,7 @@ public final class Order {
         }
     }
 
+    @Override
     public void unregister(OrderObserver o) {
     // if the observer exists,it deletes it else it throws an error
         if (observers.contains(o)) {
@@ -84,14 +86,15 @@ public final class Order {
     }
 
     // 2) Publish events
-    private void notifyObservers(String eventType) {
+    @Override
+    public void notifyObservers(Order order, String eventType) {
     // scans the list of observers for the observer and updates it with the eventType
-        for (OrderObserver o : observers) {
-            o.updated(this, eventType);
+        for (OrderObserver observer : observers) {
+            observer.updated(order, eventType);
         }
     }
 
     public void markReady() {
-        notifyObservers("ready");
+        notifyObservers(this, "ready");
     }
 }
