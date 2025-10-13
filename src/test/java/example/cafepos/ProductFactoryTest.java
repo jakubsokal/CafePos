@@ -96,4 +96,25 @@ public class ProductFactoryTest {
         o.addItem(new LineItem(withShot, 2));
         assertEquals(Money.of(6.60), o.subtotal());
     }
+
+    @Test
+    void factoryVsManual() {
+        Product viaFactory = new ProductFactory().create("ESP+SHOT+OAT+L");
+        Product viaManual = new SizeLarge(new OatMilk(new ExtraShot(
+                new SimpleProduct("P-ESP", "Espresso", Money.of(2.50))
+        )));
+
+        assertEquals(viaManual.name(), viaFactory.name());
+
+        Money priceFactory = ((Priced) viaFactory).price();
+        Money priceManual  = ((Priced) viaManual).price();
+        assertEquals(priceManual, priceFactory);
+
+        Order o1 = new Order(OrderIds.next());
+        o1.addItem(new LineItem(viaFactory, 1));
+        Order o2 = new Order(OrderIds.next());
+        o2.addItem(new LineItem(viaManual, 1));
+        assertEquals(o2.subtotal(), o1.subtotal());
+        assertEquals(o2.totalWithTax(10), o1.totalWithTax(10));
+    }
 }
