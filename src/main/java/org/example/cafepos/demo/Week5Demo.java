@@ -36,7 +36,7 @@ public final class Week5Demo {
                2. Pay
                3. See current order
                4. Exit
-               Choose an option 1-5:\s""");
+               Choose an option 1-4:\s""");
 
             String choice = INPUT.nextLine().trim();
 
