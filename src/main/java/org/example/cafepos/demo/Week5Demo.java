@@ -45,6 +45,10 @@ public final class Week5Demo {
                 case "2" -> payForOrder();
                 case "3" -> seeCurrentOrder(CURRENT_ORDER);
                 case "4" -> {
+                    if(!CURRENT_ORDER.items().isEmpty()){
+                        System.out.println(ERROR_COLOUR + "You have an ongoing order. Please complete it before exiting." + RESET_COLOUR);
+                        break;
+                    }
                     running = false;
                     try {
                         CURRENT_ORDER.unregister(KITCHEN);
@@ -189,10 +193,10 @@ public final class Week5Demo {
                 }
             }
             CURRENT_ORDER.markReady();
-            CURRENT_ORDER = new Order(OrderIds.next());
             CURRENT_ORDER.unregister(KITCHEN);
             CURRENT_ORDER.unregister(DELIVERY);
             CURRENT_ORDER.unregister(CUSTOMER);
+            CURRENT_ORDER = new Order(OrderIds.next());
             System.out.println("Starting a new order...");
         }else System.out.println("Order is empty. Please add items before paying.");
     }

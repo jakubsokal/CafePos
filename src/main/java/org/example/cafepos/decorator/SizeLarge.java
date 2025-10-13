@@ -8,7 +8,7 @@ public final class SizeLarge extends ProductDecorator {
     private static final Money SURCHARGE = Money.of(0.70);
 
     public SizeLarge(Product base) {
-                    super(base);
+        super(base);
     }
 
     @Override public String name() {
@@ -16,7 +16,6 @@ public final class SizeLarge extends ProductDecorator {
     }
 
     public Money price() {
-        return (base instanceof Priced p
-                ? p.price() : base.basePrice()).add(SURCHARGE);
+        return (base instanceof Priced p ? p.price() : base.basePrice()).add(SURCHARGE);
     }
 }
