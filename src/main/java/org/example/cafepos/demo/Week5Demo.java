@@ -1,5 +1,9 @@
 package org.example.cafepos.demo;
 
+import org.example.cafepos.catalog.Catalog;
+import org.example.cafepos.catalog.InMemoryCatalog;
+import org.example.cafepos.catalog.SimpleProduct;
+import org.example.cafepos.common.Money;
 import org.example.cafepos.common.Product;
 import org.example.cafepos.domain.LineItem;
 import org.example.cafepos.domain.Order;
@@ -19,12 +23,21 @@ public final class Week5Demo {
     private static final String RESET_COLOUR = "\u001B[0m";
     private static Order CURRENT_ORDER;
     private static Scanner INPUT;
+    private static Catalog CATALOG;
     private static final ProductFactory FACTORY = new ProductFactory();
     private static final KitchenDisplay KITCHEN = new KitchenDisplay();
     private static final DeliveryDesk DELIVERY = new DeliveryDesk();
     private static final CustomerNotifier CUSTOMER = new CustomerNotifier();
 
     public static void main(String[] args) {
+        CATALOG = new InMemoryCatalog();
+        CATALOG.add(new SimpleProduct("ESP", "Espresso",
+                Money.of(2.50)));
+        CATALOG.add(new SimpleProduct("LAT", "Latte Coffee",
+                Money.of(4.00)));
+        CATALOG.add(new SimpleProduct("CAP", "Cappuccino",
+                Money.of(4.00)));
+
         INPUT = new Scanner(System.in);
         CURRENT_ORDER = new Order(OrderIds.next());
         boolean running = true;
@@ -85,7 +98,7 @@ public final class Week5Demo {
             productId = new StringBuilder(INPUT.nextLine().toUpperCase().trim());
             if (productId.toString().equals("EXIT")) return;
 
-            if (!productId.toString().matches("ESP|LAT|CAP")) {
+            if (CATALOG.findById(productId.toString()).isEmpty()) {
                 System.out.println(ERROR_COLOUR + "Invalid product ID. Please try again." + RESET_COLOUR);
             }else break;
         }
@@ -212,7 +225,8 @@ public final class Week5Demo {
             }
             System.out.println("-------------------------------");
             System.out.println("Subtotal: " + currentOrder.subtotal());
-            System.out.println("Total with tax (10%): " + currentOrder.totalWithTax(10));
+            System.out.println("Tax (10%): " + currentOrder.taxAtPercent(10));
+            System.out.println("Total: " + currentOrder.totalWithTax(10));
             System.out.println("-------------------------------");
         }
     }
