@@ -9,11 +9,14 @@ public final class ProductFactory {
     public Product create(String recipe) {
         if (recipe == null || recipe.isBlank()) throw new
                 IllegalArgumentException("recipe required");
+
         String[] raw = recipe.split("\\+"); // literal '+'
+
         String[] parts = java.util.Arrays.stream(raw)
                 .map(String::trim)
                 .map(String::toUpperCase)
                 .toArray(String[]::new);
+
         Product p = switch (parts[0]) {
             case "ESP" -> new SimpleProduct("P-ESP", "Espresso",
                     Money.of(2.50));
@@ -24,6 +27,7 @@ public final class ProductFactory {
             default -> throw new
                     IllegalArgumentException("Unknown base: " + parts[0]);
         };
+
         for (int i = 1; i < parts.length; i++) {
             p = switch (parts[i]) {
                 case "SHOT" -> new ExtraShot(p);
@@ -34,6 +38,7 @@ public final class ProductFactory {
                         IllegalArgumentException("Unknown addon: " + parts[i]);
             };
         }
+
         return p;
     }
 }
