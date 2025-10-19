@@ -6,8 +6,10 @@ import org.example.cafepos.factory.ProductFactory;
 
 /*The first smell is a God Class because the OrderManagerGod class handles multiple responsibilities,
  including order processing, payment handling, and receipt printing. This violates the Single Responsibility Principle,
- making the class difficult to maintain and extend. */
+ making the class difficult to maintain and extend.*/
 public class OrderManagerGod {
+    //Feature Envy/Shotgun Surgery: Fixed amount for taxing
+    //Global/Static State: Two globals that are static their state can change anywhere
     public static int TAX_PERCENT = 10;
 
     public static String LAST_DISCOUNT_CODE = null;
@@ -22,6 +24,7 @@ public class OrderManagerGod {
         Money unitPrice;
 
         //Pricing Product
+        //Note: smell here catch block avoids exception
         try {
             var priced = product instanceof  org.example.cafepos.common.Priced
                     p ? p.price() : product.basePrice();
@@ -35,6 +38,10 @@ public class OrderManagerGod {
         Money subtotal = unitPrice.multiply(qty);
         Money discount = Money.zero();
 
+        /*Primitive Obsession: Using Strings for discount codes instead
+        of dedicated types and storing it in a global var, discount amounts*/
+        //Duplicate Code: The discount calculation logic
+        //Feature Envy/Shotgun Surgery: Discount Codes and Amounts
         if (discountCode != null) {
             if (discountCode.equalsIgnoreCase("LOYAL5")) {
                 discount = Money.of(subtotal.asBigDecimal()
@@ -57,6 +64,7 @@ public class OrderManagerGod {
         if (discounted.asBigDecimal().signum() < 0) discounted =
                 Money.zero();
 
+        //Primitive Obsession: Using a global variable for tax
         var tax = Money.of(discounted.asBigDecimal()
                 .multiply(java.math.BigDecimal.valueOf(TAX_PERCENT))
                 .divide(java.math.BigDecimal.valueOf(100)));
@@ -64,6 +72,8 @@ public class OrderManagerGod {
         var total = discounted.add(tax);
 
         //Handling Payment I/O based on payment type
+        //Primitive Obsession: Using Strings for payment types instead of dedicated types
+        //Duplicate Code: The payment logic and comparing
         if (paymentType != null) {
             if (paymentType.equalsIgnoreCase("CASH")) {
                 System.out.println("[Cash] Customer paid " + total + "EUR");
@@ -85,8 +95,9 @@ public class OrderManagerGod {
             receipt.append("Discount: -").append(discount).append("\n");
         }
 
+        //Primitive Obsession: Using a global variable for tax
         receipt.append("Tax (").append(TAX_PERCENT).append("%): ").append(tax).append("\n");
-                receipt.append("Total: ").append(total);
+        receipt.append("Total: ").append(total);
 
         String out = receipt.toString();
 
