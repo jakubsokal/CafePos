@@ -15,6 +15,7 @@ public final class SimpleProduct implements Product,Priced {
         this.name = name;
         this.basePrice = basePrice;
     }
+
     @Override public String id() {
         return id;
     }
@@ -26,6 +27,7 @@ public final class SimpleProduct implements Product,Priced {
     @Override public Money basePrice() {
         return basePrice;
     }
+
     //had to implement Priced to overide this method
     @Override
     public Money price() {
