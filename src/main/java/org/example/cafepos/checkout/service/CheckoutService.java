@@ -16,9 +16,7 @@ public final class CheckoutService {
     private final PricingService pricing;
     private final ReceiptPrinter printer;
 
-    public static int TAX_PERCENT = 10;
-
-    public static String LAST_DISCOUNT_CODE = null;
+    //3.6) **Delete global state** (`LAST_DISCOUNT_CODE`, `TAX_PERCENT
     private final int taxPercent;
 
     //3.5)  **Inject dependencies** (factory, discount policy, tax policy, printer, payment strategy)via constructor.
