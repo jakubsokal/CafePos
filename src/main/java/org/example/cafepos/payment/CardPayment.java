@@ -18,8 +18,8 @@ public final class CardPayment implements PaymentStrategy {
     }
 
     private String maskCardNumber(String cardNumber) {
-        if (cardNumber.length() < 8) {
-            throw new IllegalArgumentException("Card number must be at least 8 digits long");
+        if (cardNumber.length() < 16) {
+            throw new IllegalArgumentException("Card number must be 16 digits long");
         }else if (!cardNumber.matches("\\d+")) {
             throw new IllegalArgumentException("Card number must contain only digits");
         }
