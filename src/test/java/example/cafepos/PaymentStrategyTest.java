@@ -60,7 +60,7 @@ public class PaymentStrategyTest {
     @Test
     void CardPaymentSuccess() {
         //Arrange
-        CardPayment cardPayment = new CardPayment("1234567812345678");
+        CardPayment cardPayment = new CardPayment("1234567890000000");
 
         //Act
         order.pay(cardPayment);
@@ -73,7 +73,7 @@ public class PaymentStrategyTest {
     void CardPaymentTooShortCardNumber() {
         //Arrange
         CardPayment cardPayment = new CardPayment("123");
-        String actualMessage = "Card number must be at least 8 digits long";
+        String actualMessage = "Card number must be 16 digits long";
 
         //Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> order.pay(cardPayment));
@@ -83,7 +83,7 @@ public class PaymentStrategyTest {
     @Test
     void CardPaymentInvalidCardNumber() {
         //Arrange
-        CardPayment cardPayment = new CardPayment("ABCS1234");
+        CardPayment cardPayment = new CardPayment("ABC1234567890000");
         String actualMessage = "Card number must contain only digits";
 
         //Act & Assert

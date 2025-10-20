@@ -48,7 +48,7 @@ public class Week6DemoInteractive {
 
             switch (paymentType) {
                 case "CARD":
-                    paymentStrategy = new CardPayment("1233456788652");
+                    paymentStrategy = new CardPayment("1234567890001234");
                     break;
                 case "CASH":
                     paymentStrategy = new CashPayment();
