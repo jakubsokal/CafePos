@@ -129,7 +129,7 @@ public class ObservableTests {
         String expected = "paid";
 
         //Act
-        order.pay(new CardPayment("1234567890"));
+        order.pay(new CardPayment("1234567890000000"));
 
         //Assert
         assertTrue(events.contains(expected));
