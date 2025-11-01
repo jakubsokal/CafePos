@@ -97,4 +97,12 @@ public final class Order implements OrderPublisher{
     public void markReady() {
         notifyObservers(this, "ready");
     }
+   //adding method to remove items instead of using reflection in OrderObserver
+    public void removeLastItem() {
+        if (!items.isEmpty()) {
+            items.remove(items.size() - 1);
+            notifyObservers(this, "itemRemoved");
+        }
+    }
+
 }
