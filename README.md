@@ -36,6 +36,11 @@ PaymentStrategy handles payment processing based on the selected payment method 
 
 
 # WEEK 8 <br/>
+Where does Command decouple UI from business logic in your codebase? <br/>
+•	In the command classes (AddItemCommand and MacroCommand) o	Business operations encapsulated, such as adding items. They are created with data and dependencies without knowledge of the UI or when they’ll be called <br/>
+<br/>•	Also, in the invoker (PosRemote) o	When a button is pressed, the remote just calls the execute() function but doesn’t know anything about the logic its performing
+<br/>
+<br/>
 Why is adapting the legacy printer better than changing your domain or vendor class? <br/>
 It is better to adapt the legacy printer because changing the domain or vendor class could introduce more complexity and potential bugs into the system. Adapting the legacy printer allows us to create a bridge between our current system and the legacy code, ensuring that we can continue to use existing functionality without disrupting the overall architecture. This approach minimizes risk and maintains stability while still allowing for necessary updates and improvements.
 It also ensures open/closed principles are followed as we are not modifying existing code but rather extending it.
