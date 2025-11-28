@@ -1,6 +1,6 @@
 package example.cafepos;
 
-import org.example.cafepos.checkout.PricingService;
+import org.example.cafepos.pricing.PricingService;
 import org.example.cafepos.checkout.discount.DiscountPolicy;
 import org.example.cafepos.checkout.discount.FixedCouponDiscount;
 import org.example.cafepos.checkout.tax.FixedRateTaxPolicy;

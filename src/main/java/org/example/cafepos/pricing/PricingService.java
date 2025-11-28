@@ -1,4 +1,4 @@
-package org.example.cafepos.checkout;
+package org.example.cafepos.pricing;
 
 import org.example.cafepos.checkout.discount.DiscountPolicy;
 import org.example.cafepos.checkout.tax.TaxPolicy;
@@ -13,7 +13,7 @@ public class PricingService {
         this.taxPolicy = taxPolicy;
     }
 
-    public PricingResult price(Money subtotal) {
+    public org.example.cafepos.pricing.PricingService.PricingResult price(Money subtotal) {
         Money discount = discountPolicy.discountOf(subtotal);
         Money discounted = Money.of(subtotal.asBigDecimal()
                 .subtract(discount.asBigDecimal()));
@@ -22,7 +22,7 @@ public class PricingService {
         Money tax = taxPolicy.taxOn(discounted);
         Money total = discounted.add(tax);
 
-        return new PricingResult(subtotal, discount, tax, total);
+        return new org.example.cafepos.pricing.PricingService.PricingResult(subtotal, discount, tax, total);
     }
 
     public static record PricingResult

@@ -1,7 +1,7 @@
 package org.example.cafepos.checkout.service;
 
-import org.example.cafepos.checkout.PricingService;
-import org.example.cafepos.checkout.ReceiptPrinter;
+import org.example.cafepos.printing.ReceiptPrinter;
+import org.example.cafepos.pricing.PricingService;
 import org.example.cafepos.common.Money;
 import org.example.cafepos.common.Priced;
 import org.example.cafepos.common.Product;

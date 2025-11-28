@@ -14,6 +14,14 @@ public final class Order implements OrderPublisher{
 
     private final List<LineItem> items = new ArrayList<>();
 
+    public long id() {
+        return id;
+    }
+
+    public List<LineItem> items() {
+        return List.copyOf(items);
+    }
+
     public Order(long id) {
         this.id = id;
     }
@@ -55,14 +63,6 @@ public final class Order implements OrderPublisher{
         notifyObservers(this, "paid");
     }
 
-    public long id() {
-        return id;
-    }
-
-    public List<LineItem> items() {
-        return items;
-    }
-
     @Override
     public void register(OrderObserver o) {
     // if an observer does not exist it adds to the list of observers
@@ -97,6 +97,7 @@ public final class Order implements OrderPublisher{
     public void markReady() {
         notifyObservers(this, "ready");
     }
+
    //adding method to remove items instead of using reflection in OrderObserver
     public void removeLastItem() {
         if (!items.isEmpty()) {

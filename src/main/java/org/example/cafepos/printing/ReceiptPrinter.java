@@ -1,4 +1,6 @@
-package org.example.cafepos.checkout;
+package org.example.cafepos.printing;
+
+import org.example.cafepos.pricing.PricingService;
 
 public class ReceiptPrinter {
     public String format(String recipe, int qty,
